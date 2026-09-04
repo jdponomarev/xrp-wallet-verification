@@ -3,9 +3,9 @@
 Status: draft for sign-off, 2026-09-04. Nothing is scaffolded yet; this file and `docs/FINDINGS.md` are the only content in the repo.
 Source brief: the handover doc (Claude chat, 4 Sep 2026). Section numbers below refer to it.
 
-## 0. Decisions needed before scaffolding (handover §11)
+## 0. Decisions (handover §11)
 
-Each line: decision, my recommendation, why. Answer inline or in the PR.
+Decided by Dmitrii on 2026-09-04: 1 → `xrpl-message-verify`, 2 → MIT, 3 → verify-only first, 4 → replicate with `verify-xrpl-signature` as a test oracle. Items 5 to 9 take the recommendation below unless overruled. Scaffolding (Phase 0) is unblocked.
 
 1. **Names.** GitHub repo is already `jdponomarev/xrp-wallet-verification`. npm name `xrpl-message-verify` is free (registry returned 404 on 2026-09-04; also free: `xrpl-verify`, `xrpl-signed-message`, `xrp-wallet-verification`). The `@coinstash` npm scope has zero packages and would put a vendor name on a spec that is meant to be neutral (§3). **Recommend unscoped `xrpl-message-verify`**, repo name unchanged. Pages URL becomes `https://jdponomarev.github.io/xrp-wallet-verification/`.
 2. **Licence.** **Recommend MIT.** Apache-2.0 only if a patent grant matters to Coinstash legal; for crypto glue it does not.
