@@ -1,0 +1,23 @@
+{
+  "id": "xyra-pending",
+  "source": "xyra@<version>",
+  "kind": "message",
+  "algorithm": null,
+  "encoding": "utf8",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "Xyra wallet. Needs the sdk.signMessage response (message, signature, publicKey) and the address; compare the returned message with the requested text."
+}

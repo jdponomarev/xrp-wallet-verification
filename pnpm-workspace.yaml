@@ -1,0 +1,7 @@
+packages:
+  - packages/*
+
+# pnpm 11 blocks dependency build scripts unless approved. esbuild's postinstall only validates
+# the platform binary that optionalDependencies already provide, so it is safe to allow.
+allowBuilds:
+  esbuild: true

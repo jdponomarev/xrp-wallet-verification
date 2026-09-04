@@ -1,0 +1,23 @@
+{
+  "id": "crossmark-pending",
+  "source": "crossmark@<version>",
+  "kind": "message",
+  "algorithm": null,
+  "encoding": "utf8",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "Crossmark extension. Needs the full signInAndWait response for a 64-char hex nonce, including whether a signature field is present. The signed encoding is unknown, so the expected result stays open until decoded."
+}
