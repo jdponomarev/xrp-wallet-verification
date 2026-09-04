@@ -1,0 +1,20 @@
+import * as rac from 'ripple-address-codec';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { ripemd160 } from '@noble/hashes/legacy.js';
+import { hexToBytes } from '@noble/hashes/utils.js';
+import * as rk from 'ripple-keypairs';
+console.log('exports:', Object.keys(rac).sort().join(', '));
+const genesis = '0330E7FC9D56BB25D6893BA3F317AE5BCF33B3291BD63DB32654A313222F7FD020';
+const addr = rac.encodeAccountID(ripemd160(sha256(hexToBytes(genesis))));
+console.log('genesis addr        ', addr, addr === 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh');
+console.log('rk.deriveAddress    ', rk.deriveAddress(genesis));
+console.log('decodeAccountID hex ', Buffer.from(rac.decodeAccountID(addr)).toString('hex'));
+console.log('isValidClassic      ', rac.isValidClassicAddress(addr), rac.isValidClassicAddress('rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTX'));
+const x = rac.classicAddressToXAddress(addr, 4294967295, false);
+const xt = rac.classicAddressToXAddress(addr, 12345, true);
+console.log('X mainnet tag=max   ', x, rac.isValidXAddress(x), JSON.stringify(rac.xAddressToClassicAddress(x)));
+console.log('X testnet tag=12345 ', xt, rac.isValidXAddress(xt), JSON.stringify(rac.xAddressToClassicAddress(xt)));
+const xnotag = rac.classicAddressToXAddress(addr, false, false);
+console.log('X mainnet no tag    ', xnotag, JSON.stringify(rac.xAddressToClassicAddress(xnotag)));
+console.log('isValidXAddress(classic)', rac.isValidXAddress(addr), 'isValidClassic(X)', rac.isValidClassicAddress(x));
+try { rac.classicAddressToXAddress(addr, 4294967296, false); console.log('tag 2^32 accepted?!'); } catch (e) { console.log('tag 2^32 ->', e.message); }
