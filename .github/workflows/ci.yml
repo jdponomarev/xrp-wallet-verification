@@ -59,7 +59,7 @@ jobs:
       - run: node --version
       - name: Test suite on Node 20
         working-directory: packages/core
-        run: node node_modules/.bin/vitest run
+        run: ./node_modules/.bin/vitest run
       - name: Load the built bundles on Node 20
         working-directory: packages/core
         run: |
