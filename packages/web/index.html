@@ -42,6 +42,15 @@
         >
           Xaman SignIn blob
         </button>
+        <button
+          role="tab"
+          id="tab-sign"
+          aria-controls="panel-sign"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          Prove ownership
+        </button>
       </div>
 
       <section id="panel-message" role="tabpanel" aria-labelledby="tab-message">
@@ -147,6 +156,69 @@
           </div>
         </form>
         <output id="result-signin" class="result" aria-live="polite"></output>
+      </section>
+
+      <section id="panel-sign" role="tabpanel" aria-labelledby="tab-sign" hidden>
+        <div id="request-block">
+          <h2>1. Create a request</h2>
+          <p class="muted">
+            For the person who needs proof. Fill this in, send the link to the wallet owner. The
+            link carries the request text in the URL fragment, so it never reaches a server.
+          </p>
+          <form id="form-request" novalidate>
+            <div class="field">
+              <label for="rq-domain"
+                >Your domain <span class="hint">who is asking, e.g. example.com</span></label
+              >
+              <input id="rq-domain" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="field">
+              <label for="rq-address"
+                >Wallet address to prove <span class="hint">classic r… address</span></label
+              >
+              <input id="rq-address" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="field">
+              <label for="rq-statement"
+                >Statement <span class="hint">optional, one line shown to the signer</span></label
+              >
+              <input id="rq-statement" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="rq-network">Network</label>
+              <select id="rq-network">
+                <option value="mainnet">mainnet</option>
+                <option value="testnet">testnet</option>
+                <option value="devnet">devnet</option>
+                <option value="xahau">xahau</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="rq-minutes">Valid for <span class="hint">minutes</span></label>
+              <input id="rq-minutes" type="number" min="1" max="1440" value="30" />
+            </div>
+            <div class="actions">
+              <button type="submit" class="primary">Create request link</button>
+            </div>
+          </form>
+          <output id="request-out" class="result" aria-live="polite"></output>
+        </div>
+
+        <div id="sign-block" hidden>
+          <h2>2. Sign the request</h2>
+          <p class="muted">
+            For the wallet owner. Read the text, then sign it with your wallet. Signing proves you
+            control the account; it moves no funds and cannot be replayed elsewhere.
+          </p>
+          <textarea id="sign-text" rows="10" readonly spellcheck="false"></textarea>
+          <div class="actions">
+            <button type="button" class="primary" id="sign-gem">Sign with GemWallet</button>
+            <button type="button" id="sign-crossmark">
+              Sign with Crossmark <span class="hint">(experimental)</span>
+            </button>
+          </div>
+          <output id="sign-out" class="result" aria-live="polite"></output>
+        </div>
       </section>
     </main>
 

@@ -57,3 +57,59 @@ test('verifies a SignIn blob from the fixtures', async ({ page }) => {
   await expect(page.locator('#result-signin .verdict')).toHaveAttribute('data-valid', 'true');
   await expect(page.locator('#result-signin')).toContainText('SignIn');
 });
+
+test('creates a request link that opens on the sign step', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('tab', { name: 'Prove ownership' }).click();
+  await page.fill('#rq-domain', 'example.com');
+  await page.fill('#rq-address', 'rMPrYipfRHJryWfwYARAwhsVGvHwpUDjgA');
+  await page.fill('#rq-statement', 'Ownership check');
+  await page.click('#form-request button[type=submit]');
+  const text = await page.textContent('#request-text');
+  expect(text).toContain('example.com wants you to prove control of XRP Ledger account:');
+  expect(text).toContain('rMPrYipfRHJryWfwYARAwhsVGvHwpUDjgA');
+  const link = await page.inputValue('#request-link');
+  expect(link).toContain('#sign?c=');
+
+  await page.goto(link);
+  await expect(page.getByRole('tab', { name: 'Prove ownership' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.locator('#request-block')).toBeHidden();
+  expect(await page.inputValue('#sign-text')).toBe(text);
+  await expect(page.locator('#sign-gem')).toBeVisible();
+});
+
+test('a proof link verifies on load and shows the request details', async ({ page }) => {
+  const vectors = JSON.parse(
+    readFileSync(new URL('../../../fixtures/vectors.json', import.meta.url), 'utf8'),
+  ).vectors as Array<{
+    kind: string;
+    message?: string;
+    publicKey?: string;
+    signature?: string;
+    expect: { valid: boolean; derivedAddress?: string };
+    account?: unknown;
+    address?: string;
+  }>;
+  const v = vectors.find(
+    (x) =>
+      x.kind === 'message' &&
+      x.expect.valid &&
+      !x.account &&
+      x.message?.includes('wants you to prove control of XRP Ledger account'),
+  );
+  expect(v).toBeDefined();
+  const proof = {
+    message: v!.message,
+    publicKey: v!.publicKey,
+    signature: v!.signature,
+    address: v!.address ?? v!.expect.derivedAddress,
+  };
+  const b64 = Buffer.from(JSON.stringify(proof), 'utf8').toString('base64url');
+  await page.goto(`./#verify?p=${b64}`);
+  await expect(page.locator('#result-message .verdict')).toHaveAttribute('data-valid', 'true');
+  await expect(page.locator('#result-message')).toContainText('Ownership request');
+  await expect(page.locator('#result-message')).toContainText('Nonce');
+});
