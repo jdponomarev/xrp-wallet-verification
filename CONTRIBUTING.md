@@ -20,7 +20,7 @@ pnpm install
 pnpm test
 ```
 
-Node 20 or newer, pnpm 11 (`corepack enable` picks the pinned version from `package.json`).
+Node 22.13 or newer for development (pnpm 11 needs it; the published library itself runs on Node 20+), pnpm 11 (`corepack enable` picks the pinned version from `package.json`).
 
 ## Changes to verification code need fixtures
 

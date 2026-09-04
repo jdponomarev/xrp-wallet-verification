@@ -14,7 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        # pnpm 11 needs Node >= 22.13; Node 20 support is covered by core-node20 below.
+        node: [22, 24]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -34,6 +35,36 @@ jobs:
       - run: pnpm --filter xrpl-message-verify test
       - run: pnpm -r build
       - run: pnpm --filter xrpl-message-verify attw
+
+  # The library supports Node 20 but pnpm 11 does not run on it: install and build on Node 24,
+  # then run the test suite and load both bundles with Node 20.
+  core-node20:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.5.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter xrpl-message-verify build
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+      - run: node --version
+      - name: Test suite on Node 20
+        working-directory: packages/core
+        run: node node_modules/.bin/vitest run
+      - name: Load the built bundles on Node 20
+        working-directory: packages/core
+        run: |
+          node --input-type=module -e "import('./dist/index.js').then(m => { if (typeof m.verifyMessage !== 'function') process.exit(1) })"
+          node -e "if (typeof require('./dist/index.cjs').verifyMessage !== 'function') process.exit(1)"
 
   # Informational only: lists real-wallet captures still missing under fixtures/pending/.
   pending-captures:
