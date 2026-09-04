@@ -151,14 +151,17 @@ const text = formatChallenge({
   expirationTime: new Date(Date.now() + 5 * 60_000).toISOString(),
 });
 
+// Remember every nonce you issue; mark it accepted only after the signature verifies.
+const issued = new Set([parseChallenge(text).nonce]);
+
 // The wallet signs `text`. Later, on the server:
 const fields = parseChallenge(text);
 const check = await validateChallenge(fields, {
   now: new Date(),
   expectedDomain: 'example.com',
-  expectedAddress: result.derivedAddress,
+  expectedAddress: 'rMPrYipfRHJryWfwYARAwhsVGvHwpUDjgA',
   expectedNetwork: 'mainnet',
-  isNonceUnused: (nonce) => nonceStore.consumeOnce(nonce),
+  isNonceUnused: (nonce) => issued.has(nonce),
 });
 check.ok; // false with check.reason on domain_mismatch, expired, nonce_used, ...
 ```
