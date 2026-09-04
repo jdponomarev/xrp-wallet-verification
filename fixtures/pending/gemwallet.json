@@ -1,0 +1,23 @@
+{
+  "id": "gemwallet-pending",
+  "source": "gemwallet@<version>",
+  "kind": "message",
+  "algorithm": null,
+  "encoding": "utf8",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "GemWallet browser extension (Chrome). Needs publicKey, signedMessage and address from @gemwallet/api getPublicKey + signMessage over the envelope text in CAPTURE.md; record the extension version in source as gemwallet@<version>."
+}

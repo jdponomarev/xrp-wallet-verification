@@ -11,7 +11,12 @@ import type { NormalizedAddress } from './types.js';
 
 /** Classic r-address of a 33-byte public key (hex). Throws MalformedInputError on a bad key. */
 export function deriveAddress(publicKey: string): string {
-  return encodeAccountID(accountIdOf(parsePublicKey(publicKey).bytes));
+  return addressOfKeyBytes(parsePublicKey(publicKey).bytes);
+}
+
+/** Classic r-address of an already validated 33-byte public key. */
+export function addressOfKeyBytes(publicKey33: Uint8Array): string {
+  return encodeAccountID(accountIdOf(publicKey33));
 }
 
 /** Accepts a classic or X-address; returns the classic form plus tag. Throws MalformedInputError. */

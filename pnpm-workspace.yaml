@@ -1,15 +1,7 @@
 packages:
   - packages/*
 
+# pnpm 11 blocks dependency build scripts unless approved. esbuild's postinstall only validates
+# the platform binary that optionalDependencies already provide, so it is safe to allow.
 allowBuilds:
-  esbuild: set this to true or false
-
-# esbuild's postinstall only pre-fetches a binary that is already present via optionalDependencies.
-ignoredBuiltDependencies:
-  - esbuild
-
-minimumReleaseAgeExclude:
-  - '@changesets/apply-release-plan@8.1.0'
-  - '@changesets/cli@3.0.2'
-  - '@changesets/git@4.0.1'
-  - '@changesets/read@1.0.1'
+  esbuild: true

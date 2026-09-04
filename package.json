@@ -12,11 +12,11 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "build": "pnpm -r build",
-    "gen-fixtures": "pnpm --filter xrpl-message-verify exec tsx ../../scripts/gen-fixtures.ts",
+    "gen-fixtures": "pnpm --filter xrpl-message-verify exec tsx scripts/gen-fixtures.ts",
     "changeset": "changeset"
   },
   "devDependencies": {
-    "@changesets/cli": "3.0.2",
+    "@changesets/cli": "3.0.1",
     "@changesets/changelog-github": "1.0.0",
     "@eslint/js": "10.0.1",
     "eslint": "10.9.1",

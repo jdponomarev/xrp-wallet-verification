@@ -1,0 +1,23 @@
+{
+  "id": "xaman-pending",
+  "source": "xaman@<version>",
+  "kind": "signin",
+  "algorithm": null,
+  "encoding": "hex",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "Xaman SignIn payload. Needs response.hex (blobHex), response.account, response.signer, response.signer_pubkey and the app version; one payload WITH Memos and one WITHOUT, noting whether Memos survive in the signed blob."
+}

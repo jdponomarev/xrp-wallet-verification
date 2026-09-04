@@ -1,0 +1,23 @@
+{
+  "id": "metamask-snap-pending",
+  "source": "metamask-snap@<version>",
+  "kind": "message",
+  "algorithm": null,
+  "encoding": "utf8",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "MetaMask XRPL Snap. Needs the xrpl_signMessage response (signature) plus the public key and address the Snap reports; scheme unverified."
+}

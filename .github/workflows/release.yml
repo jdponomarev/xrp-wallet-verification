@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+# id-token: write lets npm exchange the GitHub OIDC token for a short-lived publish token
+# (npm trusted publishing). No npm token is stored anywhere; provenance is attached automatically.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+      - uses: pnpm/action-setup@v6
+        with:
+          # Must match "packageManager" in package.json.
+          version: 11.5.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm >= 11.5.1; the npm bundled with Node may be older.
+      - run: npm install -g npm@latest
+      - name: Tag must match packages/core version
+        run: |
+          version="$(node -p "require('./packages/core/package.json').version")"
+          test "v${version}" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} != v${version}"; exit 1; }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm --filter xrpl-message-verify test
+      # npm only picks up README and LICENSE from the package directory itself.
+      - run: cp README.md LICENSE packages/core/
+      - name: Publish dry run
+        working-directory: packages/core
+        run: npm publish --dry-run
+      # The trusted publisher must be registered on npmjs.com for the package "xrpl-message-verify"
+      # with repository jdponomarev/xrp-wallet-verification and this exact workflow filename,
+      # release.yml. The very first publish of a new package name may have to be done manually
+      # (with 2FA) before OIDC publishing is accepted; see docs/FINDINGS.md F-5.1.
+      - name: Publish
+        working-directory: packages/core
+        run: npm publish

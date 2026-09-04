@@ -1,0 +1,5 @@
+# Reviews from a code owner are required on these paths (see CONTRIBUTING.md, branch protection).
+/packages/core/src/ @jdponomarev
+/fixtures/ @jdponomarev
+/pnpm-lock.yaml @jdponomarev
+/packages/core/package.json @jdponomarev

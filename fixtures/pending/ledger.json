@@ -1,0 +1,23 @@
+{
+  "id": "ledger-pending",
+  "source": "ledger@<version>",
+  "kind": "message",
+  "algorithm": null,
+  "encoding": "utf8",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "Ledger Nano with the XRP app. One attempt of xrpl-connect LedgerAdapter.signMessage over the envelope text; record the APDU status word. Expected outcome is a rejection, which would confirm Ledger as unsupported."
+}

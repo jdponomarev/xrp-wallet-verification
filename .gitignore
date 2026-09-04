@@ -5,3 +5,6 @@ coverage/
 .DS_Store
 test-results/
 playwright-report/
+# copied in by release.yml so the npm tarball carries them
+packages/core/README.md
+packages/core/LICENSE

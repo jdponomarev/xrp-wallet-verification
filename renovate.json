@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "rangeStrategy": "pin",
+  "lockFileMaintenance": { "enabled": true },
+  "packageRules": [
+    {
+      "matchPackageNames": ["*"],
+      "groupName": "all dependencies",
+      "groupSlug": "all"
+    },
+    {
+      "matchPackageNames": ["ripple-*", "@noble/**", "verify-xrpl-signature", "xrpl"],
+      "groupName": "crypto dependencies",
+      "groupSlug": "crypto-deps",
+      "addLabels": ["crypto-deps", "manual-review"],
+      "automerge": false,
+      "minimumReleaseAge": "7 days"
+    }
+  ]
+}

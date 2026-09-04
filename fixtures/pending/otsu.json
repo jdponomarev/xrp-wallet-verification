@@ -1,0 +1,23 @@
+{
+  "id": "otsu-pending",
+  "source": "otsu@<version>",
+  "kind": "message",
+  "algorithm": null,
+  "encoding": "utf8",
+  "message": null,
+  "messageHex": null,
+  "publicKey": null,
+  "signature": null,
+  "address": null,
+  "blobHex": null,
+  "options": null,
+  "account": null,
+  "policy": null,
+  "expect": {
+    "valid": null,
+    "reason": null,
+    "signer": null,
+    "derivedAddress": null
+  },
+  "notes": "Otsu wallet. Needs the window.xrpl.signMessage response (signature) plus public key and address; scheme unverified."
+}

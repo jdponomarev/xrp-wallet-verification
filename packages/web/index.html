@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https:; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Verify XRP Ledger signed messages and Xaman SignIn blobs in your browser. Nothing is uploaded."
+    />
+    <title>XRPL Message Verify</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230a7f5a'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 12' stroke='%23fff' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>XRPL Message Verify</h1>
+      <p class="lede">
+        Check who signed a message on the XRP Ledger. Everything runs in your browser; nothing is
+        uploaded unless you turn on the optional account lookup.
+      </p>
+    </header>
+
+    <main>
+      <div class="tabs" role="tablist" aria-label="What to verify">
+        <button role="tab" id="tab-message" aria-controls="panel-message" aria-selected="true">
+          Signed message
+        </button>
+        <button
+          role="tab"
+          id="tab-signin"
+          aria-controls="panel-signin"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          Xaman SignIn blob
+        </button>
+      </div>
+
+      <section id="panel-message" role="tabpanel" aria-labelledby="tab-message">
+        <form id="form-message" novalidate>
+          <div class="field">
+            <label for="msg-text">Message</label>
+            <textarea
+              id="msg-text"
+              rows="5"
+              spellcheck="false"
+              placeholder="The exact text that was signed"
+            ></textarea>
+            <fieldset class="inline">
+              <legend class="sr-only">Message encoding</legend>
+              <label><input type="radio" name="msg-encoding" value="utf8" checked /> Text</label>
+              <label><input type="radio" name="msg-encoding" value="hex" /> Hex bytes</label>
+            </fieldset>
+          </div>
+          <div class="field">
+            <label for="msg-pubkey"
+              >Public key <span class="hint">33 bytes hex, starts with 02, 03 or ED</span></label
+            >
+            <input id="msg-pubkey" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label for="msg-sig"
+              >Signature
+              <span class="hint">hex, DER for secp256k1 or 64 bytes for ed25519</span></label
+            >
+            <input id="msg-sig" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label for="msg-address"
+              >Address <span class="hint">optional, classic r… or X-address</span></label
+            >
+            <input id="msg-address" autocomplete="off" spellcheck="false" />
+          </div>
+          <details class="lookup">
+            <summary>Account lookup (optional, contacts a public node)</summary>
+            <label
+              ><input type="checkbox" id="msg-lookup" /> Check RegularKey, master key and signer
+              list on the ledger</label
+            >
+            <label for="msg-node">Node</label>
+            <select id="msg-node">
+              <option value="https://xrplcluster.com">Mainnet · xrplcluster.com</option>
+              <option value="https://s1.ripple.com:51234">Mainnet · s1.ripple.com</option>
+              <option value="https://s.altnet.rippletest.net:51234">Testnet · altnet</option>
+              <option value="https://s.devnet.rippletest.net:51234">Devnet</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input id="msg-node-custom" placeholder="https://your-node.example/" hidden />
+          </details>
+          <div class="actions">
+            <button type="submit" class="primary">Verify</button>
+            <button type="button" class="ghost" id="msg-example">Load example</button>
+          </div>
+        </form>
+        <output id="result-message" class="result" aria-live="polite"></output>
+      </section>
+
+      <section id="panel-signin" role="tabpanel" aria-labelledby="tab-signin" hidden>
+        <form id="form-signin" novalidate>
+          <div class="field">
+            <label for="si-blob"
+              >Signed transaction blob
+              <span class="hint">hex from the Xaman payload response</span></label
+            >
+            <textarea id="si-blob" rows="6" spellcheck="false"></textarea>
+          </div>
+          <div class="field">
+            <label for="si-account">Expected account <span class="hint">optional</span></label>
+            <input id="si-account" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label for="si-memo"
+              >Expected memo text <span class="hint">optional, must equal a MemoData</span></label
+            >
+            <textarea id="si-memo" rows="3" spellcheck="false"></textarea>
+          </div>
+          <label class="check"
+            ><input type="checkbox" id="si-legacy" /> Accept blobs without a TransactionType (older
+            Xaman SignIn)</label
+          >
+          <details class="lookup">
+            <summary>Account lookup (optional, contacts a public node)</summary>
+            <label
+              ><input type="checkbox" id="si-lookup" /> Check RegularKey, master key and signer list
+              on the ledger</label
+            >
+            <label for="si-node">Node</label>
+            <select id="si-node">
+              <option value="https://xrplcluster.com">Mainnet · xrplcluster.com</option>
+              <option value="https://s1.ripple.com:51234">Mainnet · s1.ripple.com</option>
+              <option value="https://s.altnet.rippletest.net:51234">Testnet · altnet</option>
+              <option value="https://s.devnet.rippletest.net:51234">Devnet</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input id="si-node-custom" placeholder="https://your-node.example/" hidden />
+          </details>
+          <div class="actions">
+            <button type="submit" class="primary">Verify</button>
+          </div>
+        </form>
+        <output id="result-signin" class="result" aria-live="polite"></output>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <a href="https://github.com/jdponomarev/xrp-wallet-verification/blob/main/docs/envelope.md"
+          >How it works</a
+        >
+        · <a href="https://github.com/jdponomarev/xrp-wallet-verification">Source</a> ·
+        <a href="https://www.npmjs.com/package/xrpl-message-verify">npm</a>
+      </p>
+      <p id="build-info" class="muted"></p>
+      <p class="muted">Not affiliated with Ripple, the XRPL Foundation or XRPL Labs.</p>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

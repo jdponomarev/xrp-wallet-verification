@@ -130,6 +130,7 @@ export interface ValidateChallengeContext {
 }
 
 export type ChallengeFailure =
+  | 'malformed_fields'
   | 'domain_mismatch'
   | 'address_mismatch'
   | 'network_mismatch'
