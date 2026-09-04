@@ -80,6 +80,24 @@ function randomFields(next: () => number): ChallengeFields {
 }
 
 describe('formatChallenge', () => {
+  it('rejects a statement that would be read as the URI line', () => {
+    expect(() => formatChallenge({ ...base, statement: 'URI: https://evil.example/' })).toThrow(
+      MalformedInputError,
+    );
+  });
+
+  it('rejects invisible or reordering characters in free-text fields', () => {
+    for (const bad of ['a\u2028b', 'a\u202Eb', 'a\u0085b', 'a\uFEFFb', 'a\u200Bb']) {
+      expect(() => formatChallenge({ ...base, statement: bad })).toThrow(MalformedInputError);
+      expect(() => formatChallenge({ ...base, requestId: bad })).toThrow(MalformedInputError);
+    }
+    const text = formatChallenge({ ...base, statement: 'Sign in' }).replace(
+      'Sign in',
+      'Sign\u2028in',
+    );
+    expect(() => parseChallenge(text)).toThrow(ParseError);
+  });
+
   it('renders the canonical envelope with LF endings and no trailing newline', () => {
     expect(formatChallenge(base)).toBe(CANONICAL);
   });
@@ -257,6 +275,19 @@ describe('validateChallenge', () => {
 
   it('accepts a fresh, matching challenge', async () => {
     await expect(validateChallenge(base, ctx())).resolves.toEqual({ ok: true });
+  });
+
+  it('returns address_mismatch, not a throw, for an unparsable expectedAddress', async () => {
+    await expect(
+      validateChallenge(base, ctx({ expectedAddress: 'not-an-address' })),
+    ).resolves.toEqual({ ok: false, reason: 'address_mismatch' });
+  });
+
+  it('returns malformed_fields for a non-object fields argument', async () => {
+    await expect(validateChallenge(null as unknown as ChallengeFields, ctx())).resolves.toEqual({
+      ok: false,
+      reason: 'malformed_fields',
+    });
   });
 
   it('returns malformed_fields for hand-built fields the parser would reject', async () => {
