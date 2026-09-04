@@ -170,19 +170,19 @@ check.ok; // false with check.reason on domain_mismatch, expired, nonce_used, ..
 
 `valid: false` always comes with one `reason`:
 
-| Reason                        | Meaning                                                                                                        |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `malformed_input`             | Hex is odd-length or not hex, the key is not 33 bytes with prefix `02`/`03`/`ED`, is off-curve, DER is invalid |
-| `message_too_large`           | Message exceeds `policy.maxMessageBytes` (default 65536)                                                       |
-| `algorithm_mismatch`          | Signature shape does not match the key's algorithm (DER with an `ED` key, 64 bytes with a secp key)            |
-| `non_canonical_signature`     | secp256k1 signature has high S (or ed25519 `s` not reduced); rejected because it is malleable                  |
-| `bad_signature`               | Well-formed signature that does not verify for this key and message                                            |
-| `address_mismatch`            | Derived address differs from the supplied `address` (and from the RegularKey when account state is given)      |
-| `account_not_found`           | `account` says the address is not on the ledger                                                                |
-| `master_disabled`             | Signed by the master key while `lsfDisableMaster` is set and `policy.allowMasterDisabled` is false             |
-| `unsupported_multisig`        | The account has a SignerList, or the blob carries `Signers`                                                    |
-| `unexpected_transaction_type` | SignIn blob is not TransactionType 999, or carries submittable fields                                          |
-| `challenge_mismatch`          | The expected memo or challenge text is not what was signed                                                     |
+| Reason                        | Meaning                                                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `malformed_input`             | Hex is odd-length or not hex, the key is not 33 bytes with prefix `02`/`03`/`ED`, is off-curve, DER is invalid                     |
+| `message_too_large`           | Message exceeds `policy.maxMessageBytes` (default 65536)                                                                           |
+| `algorithm_mismatch`          | Signature shape does not match the key's algorithm (DER with an `ED` key, 64 bytes with a secp key)                                |
+| `non_canonical_signature`     | secp256k1 signature has high S (or ed25519 `s` not reduced); rejected because it is malleable (`policy.requireLowS`, default true) |
+| `bad_signature`               | Well-formed signature that does not verify for this key and message                                                                |
+| `address_mismatch`            | Derived address differs from the supplied `address` (and from the RegularKey when account state is given)                          |
+| `account_not_found`           | `account` says the address is not on the ledger                                                                                    |
+| `master_disabled`             | Signed by the master key while `lsfDisableMaster` is set and `policy.allowMasterDisabled` is false                                 |
+| `unsupported_multisig`        | The account has a SignerList, or the blob carries `Signers`                                                                        |
+| `unexpected_transaction_type` | SignIn blob is not TransactionType 999, or carries submittable fields                                                              |
+| `challenge_mismatch`          | The expected memo or challenge text is not what was signed                                                                         |
 
 ## Wallet support
 

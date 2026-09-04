@@ -9,12 +9,19 @@ const VALID = {
   address: 'rMPrYipfRHJryWfwYARAwhsVGvHwpUDjgA',
 };
 
-test('verifies and rejects a message with no page errors', async ({ page }) => {
-  const errors: string[] = [];
+let errors: string[] = [];
+test.beforeEach(({ page }) => {
+  errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(m.text());
   });
+});
+test.afterEach(() => {
+  expect(errors).toEqual([]);
+});
+
+test('verifies and rejects a message with no page errors', async ({ page }) => {
   await page.goto('./');
   await expect(page.getByRole('heading', { name: 'XRPL Message Verify' })).toBeVisible();
 
@@ -30,8 +37,6 @@ test('verifies and rejects a message with no page errors', async ({ page }) => {
   await page.click('#form-message button[type=submit]');
   await expect(page.locator('#result-message .verdict')).toHaveAttribute('data-valid', 'false');
   await expect(page.locator('#result-message')).toContainText('bad_signature');
-
-  expect(errors).toEqual([]);
 });
 
 test('verifies a SignIn blob from the fixtures', async ({ page }) => {
@@ -44,7 +49,7 @@ test('verifies a SignIn blob from the fixtures', async ({ page }) => {
     options?: unknown;
   }>;
   const v = vectors.find((x) => x.kind === 'signin' && x.expect.valid && !x.options);
-  test.skip(!v, 'no valid signin vector');
+  expect(v).toBeDefined();
   await page.goto('./');
   await page.getByRole('tab', { name: 'Xaman SignIn blob' }).click();
   await page.fill('#si-blob', v!.blobHex!);

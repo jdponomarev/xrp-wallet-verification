@@ -67,7 +67,9 @@ base58           = ALPHA / DIGIT                     ; the XRPL base58 alphabet,
 
 statement        = visible *( visible / SP ) visible / visible
                                                      ; one line, no leading/trailing space
-visible          = %x21-7E / %x80-10FFFF             ; any non-control, non-space character
+visible          = %x21-7E / %x80-10FFFF             ; excluding Unicode categories Cc, Cf, Zl, Zp
+                                                     ; (controls, format chars such as bidi overrides,
+                                                     ; line and paragraph separators)
 
 uri              = 1*visible                         ; absolute URI per RFC 3986
 version          = "1"
@@ -173,7 +175,7 @@ Beyond those checks the verifier MUST:
   validation of the envelope is not proof of control;
 - treat a thrown nonce-store error as a failure, never as "unused";
 - fix `now` from its own clock, never from the client;
-- reject the whole request when the parsed text re-formats to different bytes than were signed.
+- reject the whole request when the parsed text re-formats to different bytes than were signed. (in code: `formatChallenge(parseChallenge(signedText)) === signedText`; CRLF input is the one deviation `parseChallenge` tolerates, and this check catches it)
 
 ## 8. Worked example
 

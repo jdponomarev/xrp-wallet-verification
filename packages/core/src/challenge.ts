@@ -68,14 +68,17 @@ function isNetwork(value: unknown): value is ChallengeNetwork {
   return (NETWORK_NAMES as readonly string[]).includes(value as string);
 }
 
-/** A single line of free text: non-empty, no control characters, no surrounding whitespace. */
+/**
+ * A single line of free text: non-empty, no surrounding whitespace, and none of the characters a
+ * wallet could render as a line break, hidden text or reordered text (controls, format characters
+ * such as bidi overrides and zero-width joiners, Unicode line and paragraph separators).
+ */
 function isLine(value: unknown): value is string {
   return (
     typeof value === 'string' &&
     value !== '' &&
     value === value.trim() &&
-    // eslint-disable-next-line no-control-regex
-    !/[\x00-\x1F\x7F]/.test(value)
+    !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(value)
   );
 }
 
@@ -93,6 +96,7 @@ function checkFields(f: ChallengeFields): string | undefined {
   if (typeof f.domain !== 'string' || !splitDomain(f.domain)) return 'domain: expected host[:port]';
   if (!isClassicAddress(f.address)) return 'address: expected a classic address';
   if (f.statement !== undefined && !isLine(f.statement)) return 'statement: expected a single line';
+  if (f.statement?.startsWith('URI: ')) return 'statement: must not start with "URI: "';
   if (typeof f.uri !== 'string' || !parseUrl(f.uri)) return 'uri: expected an absolute URI';
   if (f.version !== '1') return 'version: expected "1"';
   if (!isNetwork(f.network)) return 'network: expected a network name or a uint32 NetworkID';
@@ -248,17 +252,21 @@ export async function validateChallenge(
   }
   const fail = (reason: ChallengeFailure): ValidateChallengeResult => ({ ok: false, reason });
 
+  if (typeof fields !== 'object' || fields === null) return fail('malformed_fields');
   if (
     typeof fields.domain !== 'string' ||
     fields.domain.toLowerCase() !== ctx.expectedDomain.toLowerCase()
   ) {
     return fail('domain_mismatch');
   }
-  if (
-    ctx.expectedAddress !== undefined &&
-    normalizeAddress(ctx.expectedAddress).classic !== fields.address
-  ) {
-    return fail('address_mismatch');
+  if (ctx.expectedAddress !== undefined) {
+    let expected: string;
+    try {
+      expected = normalizeAddress(ctx.expectedAddress).classic;
+    } catch {
+      return fail('address_mismatch');
+    }
+    if (expected !== fields.address) return fail('address_mismatch');
   }
   if (ctx.expectedNetwork !== undefined && ctx.expectedNetwork !== fields.network) {
     return fail('network_mismatch');
