@@ -12,6 +12,8 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@crossmarkio/sdk": "0.4.0",
+    "@gemwallet/api": "3.8.0",
     "xrpl-message-verify": "workspace:*"
   },
   "devDependencies": {

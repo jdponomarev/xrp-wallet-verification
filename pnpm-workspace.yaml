@@ -5,3 +5,5 @@ packages:
 # the platform binary that optionalDependencies already provide, so it is safe to allow.
 allowBuilds:
   esbuild: true
+  # Native addon pulled in transitively by a wallet SDK; its JS fallback is enough for the browser bundle.
+  tiny-secp256k1: false

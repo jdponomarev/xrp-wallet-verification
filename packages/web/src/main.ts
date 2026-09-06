@@ -1,8 +1,10 @@
 import {
   parseChallenge,
   resolveAccount,
+  validateChallenge,
   verifyMessage,
   verifySignInBlob,
+  type ChallengeFields,
   type AccountState,
   type DecodedMemo,
   type Reason,
@@ -11,6 +13,8 @@ import {
   type VerifyResult,
   type VerifySignInOptions,
 } from 'xrpl-message-verify';
+import { $, esc } from './dom.js';
+import { initSign, proofFromHash } from './sign.js';
 
 const REASONS: Record<Reason, string> = {
   bad_signature: 'The signature does not match this message and public key.',
@@ -31,12 +35,6 @@ const REASONS: Record<Reason, string> = {
   unexpected_transaction_type:
     'The blob is not a SignIn pseudo-transaction. Real transactions are not ownership proofs.',
   challenge_mismatch: 'No memo in the blob equals the expected challenge text.',
-};
-
-const $ = <T extends HTMLElement>(id: string): T => {
-  const el = document.getElementById(id);
-  if (!el) throw new Error(`missing #${id}`);
-  return el as T;
 };
 
 // Tabs
@@ -99,10 +97,6 @@ async function maybeResolve(
   return resolveAccount(address, fetchClient(nodeUrl(prefix)));
 }
 
-function esc(s: unknown): string {
-  return String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-}
-
 function renderResult(out: HTMLElement, r: VerifyResult, extra = ''): void {
   const rows: Array<[string, unknown]> = [];
   if (r.algorithm) rows.push(['Algorithm', r.algorithm]);
@@ -156,7 +150,13 @@ $<HTMLFormElement>('form-message').addEventListener('submit', async (e) => {
     if (address) input.address = address;
     const account = await maybeResolve('msg', address);
     if (account) input.account = account;
-    renderResult(out, verifyMessage(input), account ? accountHtml(account) : '');
+    const r = verifyMessage(input);
+    renderResult(
+      out,
+      r,
+      (account ? accountHtml(account) : '') +
+        (encoding === 'utf8' ? await challengeHtml(input.message, r.derivedAddress) : ''),
+    );
   } catch (err) {
     renderError(out, err);
   }
@@ -169,6 +169,40 @@ function accountHtml(a: AccountState): string {
     `<dt>Master disabled</dt><dd>${a.masterDisabled}</dd><dt>Signer list</dt><dd>${a.hasSignerList}</dd>` +
     (a.ledgerIndex ? `<dt>Ledger index</dt><dd>${a.ledgerIndex}</dd>` : '') +
     `</dl>`
+  );
+}
+
+/** When the message is a v1 challenge, show its fields and the time/address checks. */
+async function challengeHtml(message: string, derivedAddress: string | undefined): Promise<string> {
+  let fields: ChallengeFields;
+  try {
+    fields = parseChallenge(message);
+  } catch {
+    return '';
+  }
+  const ctx = {
+    now: new Date(),
+    expectedDomain: fields.domain,
+    isNonceUnused: () => true,
+    ...(derivedAddress ? { expectedAddress: derivedAddress } : {}),
+  };
+  const check = await validateChallenge(fields, ctx);
+  const rows: Array<[string, unknown]> = [
+    ['Requested by', fields.domain],
+    ['Account', fields.address],
+    ['Network', fields.network],
+    ['Nonce', fields.nonce],
+    ['Issued', fields.issuedAt],
+    ['Expires', fields.expirationTime],
+  ];
+  if (fields.statement) rows.push(['Statement', fields.statement]);
+  if (fields.requestId) rows.push(['Request ID', fields.requestId]);
+  const status = check.ok
+    ? '<span class="ok-text">Request is current and names the signing account.</span>'
+    : `<span class="bad-text">Request check failed: <code>${esc(check.reason)}</code>.</span>`;
+  return (
+    `<p><strong>Ownership request</strong></p><dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` +
+    `<p class="notice">${status} This page cannot know whether <em>you</em> issued this nonce or have seen it before; compare it with the request you sent.</p>`
   );
 }
 
@@ -222,5 +256,20 @@ $<HTMLFormElement>('form-signin').addEventListener('submit', async (e) => {
     renderError(out, err);
   }
 });
+
+initSign({ selectTab: (id) => selectTab($<HTMLButtonElement>(id)) });
+// Request and proof links are routed once at load; a pasted link in an open tab starts over.
+window.addEventListener('hashchange', () => location.reload());
+
+// A proof link fills the verify form and runs it.
+const proof = proofFromHash();
+if (proof) {
+  $<HTMLTextAreaElement>('msg-text').value = proof.message;
+  $<HTMLInputElement>('msg-pubkey').value = proof.publicKey;
+  $<HTMLInputElement>('msg-sig').value = proof.signature;
+  $<HTMLInputElement>('msg-address').value = proof.address;
+  selectTab($<HTMLButtonElement>('tab-message'));
+  $<HTMLFormElement>('form-message').requestSubmit();
+}
 
 $('build-info').textContent = `xrpl-message-verify v${__CORE_VERSION__} · build ${__COMMIT__}`;

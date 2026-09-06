@@ -166,6 +166,24 @@ const check = await validateChallenge(fields, {
 check.ok; // false with check.reason on domain_mismatch, expired, nonce_used, ...
 ```
 
+## Prove ownership without writing code
+
+The verify page has a **Prove ownership** tab for the case where one person needs proof and the
+other only has a wallet.
+
+1. **Requester** fills in their domain and the wallet address, gets a link, and sends it to the
+   wallet owner. The request text (a v1 challenge with a fresh nonce and an expiry) travels in the
+   URL fragment, so it never reaches a server.
+2. **Wallet owner** opens the link, reads the text, clicks **Sign with GemWallet** (or Crossmark,
+   experimental) and approves in the extension. The page verifies the signature on the spot and
+   shows a proof: a verification link and a JSON block. Nothing secret is in either.
+3. **Requester** opens the verification link. The page verifies the signature, derives the
+   address, and shows the request fields with the expiry and address checks. Compare the nonce
+   with the one you sent; the page cannot know which nonces you issued.
+
+Xaman users cannot use this tab: Xaman only signs through its platform API, so the requester's
+backend has to create the SignIn payload (see `verifySignInBlob` and `docs/envelope.md` §6).
+
 ## Reason codes
 
 `valid: false` always comes with one `reason`:

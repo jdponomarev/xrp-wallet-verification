@@ -259,3 +259,46 @@ pre {
     margin-top: 0.5rem;
   }
 }
+
+section[role='tabpanel'] h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.25rem;
+}
+#sign-block {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+#sign-block textarea {
+  margin-bottom: 0.75rem;
+}
+.proof {
+  margin-top: 1rem;
+}
+.proof pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.linkbox {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+.linkbox input {
+  flex: 1;
+}
+.notice {
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: var(--code-bg);
+  margin-top: 0.75rem;
+}
+.ok-text {
+  color: var(--ok-ink);
+  font-weight: 600;
+}
+.bad-text {
+  color: var(--bad-ink);
+  font-weight: 600;
+}

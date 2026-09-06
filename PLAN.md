@@ -128,7 +128,7 @@ GemWallet and Crossmark via their SDKs, Xaman via a hosted payload flow that nee
 
 ## 6. Status (2026-09-04)
 
-Done: workspace, `packages/core` (all five modules), 85 generated fixtures plus the XRPL Labs reference blobs, cross-check tests against ripple-keypairs and verify-xrpl-signature, docs (README, SECURITY, CONTRIBUTING, envelope, threat model, FINDINGS), CI, release and Pages workflows, `packages/web` verify page with a Playwright smoke test.
+Done: workspace, `packages/core` (all five modules), Phase 2b Sign tab (GemWallet, Crossmark experimental) with request and proof links, 85 generated fixtures plus the XRPL Labs reference blobs, cross-check tests against ripple-keypairs and verify-xrpl-signature, docs (README, SECURITY, CONTRIBUTING, envelope, threat model, FINDINGS), CI, release and Pages workflows, `packages/web` verify page with a Playwright smoke test.
 
 Open, needs a human:
 

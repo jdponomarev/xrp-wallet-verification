@@ -49,17 +49,9 @@ testnet faucet). Hex of a UTF-8 string in a browser console:
 1. Install GemWallet from the Chrome Web Store. Create a new wallet, switch the network to Testnet
    (Settings → Network), fund it from the faucet.
 2. Note the extension version from `chrome://extensions` (Details → Version).
-3. The verify page has no Sign tab yet, so drive `@gemwallet/api` from the browser console on any
-   https page where the extension is enabled (the Pages site works):
-
-   ```js
-   const gem = await import('https://esm.sh/@gemwallet/api@3.8.0');
-   const key = await gem.getPublicKey(); // { result: { address, publicKey } }
-   const text = `...envelope with key.result.address...`;
-   const sig = await gem.signMessage(text); // { result: { signedMessage } }
-   console.log(JSON.stringify({ ...key.result, signedMessage: sig.result.signedMessage, text }));
-   ```
-
+3. Open the verify page, **Prove ownership** tab, create a request for the account's address
+   (domain `example.com`), then click **Sign with GemWallet** and approve. The page shows the
+   proof JSON with `message`, `publicKey`, `signature` and `address`; copy it.
 4. Record `publicKey`, `signature` (= `signedMessage`), `address`, `message` (= `text`),
    `encoding: "utf8"`, `algorithm` from the key prefix (`ED` → ed25519, `02`/`03` → secp256k1),
    `source: "gemwallet@<version>"`, `expect: { valid: true, reason: null, signer: "master" }`.
