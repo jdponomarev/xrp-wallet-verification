@@ -184,6 +184,8 @@ other only has a wallet.
 Xaman users cannot use this tab: Xaman only signs through its platform API, so the requester's
 backend has to create the SignIn payload (see `verifySignInBlob` and `docs/envelope.md` §6).
 
+A plain-language walkthrough for the wallet owner is in [docs/prove-ownership.md](docs/prove-ownership.md).
+
 ## Reason codes
 
 `valid: false` always comes with one `reason`:
